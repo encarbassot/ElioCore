@@ -40,6 +40,17 @@ export const BORDERS_SPACE = {
   h:" ",
 }
 
+const COLOR_CODES = {
+  reset: "\x1b[0m",
+  black: "\x1b[30m",
+  red: "\x1b[31m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  magenta: "\x1b[35m",
+  cyan: "\x1b[36m",
+  white: "\x1b[37m",
+};
 
 
 
@@ -52,31 +63,20 @@ export const BORDERS_SPACE = {
  */
 export function c(color_, text = "") {
     const color = color_.toLowerCase();
-    const colors = {
-      reset: "\x1b[0m",
-      black: "\x1b[30m",
-      red: "\x1b[31m",
-      green: "\x1b[32m",
-      yellow: "\x1b[33m",
-      blue: "\x1b[34m",
-      magenta: "\x1b[35m",
-      cyan: "\x1b[36m",
-      white: "\x1b[37m",
-    };
-
+    
     //ALIAS
-    colors.r = colors.red
-    colors.g = colors.green
-    colors.y = colors.yellow
-    colors.b = colors.blue
-    colors.w = colors.white
+    COLOR_CODES.r = COLOR_CODES.red
+    COLOR_CODES.g = COLOR_CODES.green
+    COLOR_CODES.y = COLOR_CODES.yellow
+    COLOR_CODES.b = COLOR_CODES.blue
+    COLOR_CODES.w = COLOR_CODES.white
   
     if (text === "") {
-      return colors[color]
+      return COLOR_CODES[color]
     }
   
-    const prefix = colors[color] || colors.reset;
-    const suffix = colors.reset;
+    const prefix = COLOR_CODES[color] || COLOR_CODES.reset;
+    const suffix = COLOR_CODES.reset;
   
     return `${prefix}${text}${suffix}`;
   }
@@ -192,7 +192,22 @@ export function title(text="",options) {
       ...BORDERS_FINE,
       ...borders
     }
+
+    const colors = mat.map(row=>row.map(x=>
+        typeof x === "string" ? "green" :
+        typeof x === "number" ? "yellow" :
+        typeof x === "boolean" ? "blue" :
+        x instanceof Date ? "red" :
+        "white" 
+    ))
   
+
+    const toStringer = (x) => {
+      if (typeof x === "string") return x;
+      if (x instanceof Date) return x.toISOString();
+      return String(x);
+    }
+
     // Logic to handle maxFieldLength
     const applyMaxFieldLength = (str) => {
       if (OPT.maxFieldLength && str.length > OPT.maxFieldLength) {
@@ -207,7 +222,7 @@ export function title(text="",options) {
       }
     }
     
-    mat = mat.map(x=>x.map(y=>applyMaxFieldLength(String(y))))
+    mat = mat.map(x=>x.map(y=>applyMaxFieldLength(toStringer(y))))
     const matWithBreakLines = mat.map(x=>x.map(y=>y.split("\n")))
   
     const padh = " ".repeat(OPT.paddingH)
@@ -267,7 +282,10 @@ export function title(text="",options) {
           content = c(OPT.headerColor,content)
         }else if(OPT.cellColor){
           content = c(OPT.cellColor,content)
-        } 
+        } else{
+          // content = c(COLOR_CODES[colors[i][j]], content)
+          content = COLOR_CODES[colors[i][j]] + content
+        }
         lineResult += content
   
         //cell separator

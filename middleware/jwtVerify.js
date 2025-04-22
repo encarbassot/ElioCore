@@ -9,7 +9,7 @@ function unzipJWT(token,secret){
 
 
 
-export function jwtVerify(tokenChecker, config){
+export default function jwtVerify(tokenChecker, config){
 
   return async (req, res, next) => {
 
@@ -32,6 +32,7 @@ export function jwtVerify(tokenChecker, config){
       if(tokenChecker){
 
         const jwt = unzipJWT(token, config.JWT_SECRET)
+        console.log("UNZIP",jwt)
 
         const user = tokenChecker(jwt,token)
         if(!user){
