@@ -144,17 +144,42 @@ export default class ElioDB {
    * @returns {Object} - The result of the insert query.
    */
   async insert(table, data) {
-    // Build the columns and placeholders for the insert query
-    const columns = Object.keys(data).join(", ")
-    const placeholders = Object.keys(data).map(() => "?").join(", ")
-    const values = Object.values(data)
+    if(Array.isArray(data)){
+      if (data.length === 0) return
 
-    // Construct the query string for inserting data into the table
-    const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
-
-    // Execute the query and return the result
-    const [result] = await this.db.query(query, values)
-    return result
+      const referenceKeys = Object.keys(data[0]).sort().join(',')
+  
+      const allSameKeys = data.every(item =>
+        Object.keys(item).sort().join(',') === referenceKeys
+      )
+  
+      if (!allSameKeys) {
+        throw new Error('All objects in array must have the same keys')
+      }
+  
+      const columns = Object.keys(data[0])
+      const placeholders = `(${columns.map(() => '?').join(', ')})`
+      const allPlaceholders = data.map(() => placeholders).join(', ')
+      const values = data.flatMap(Object.values)
+  
+      const query = `INSERT INTO ${table} (${columns.join(', ')}) VALUES ${allPlaceholders}`
+  
+      const [result] = await this.db.query(query, values)
+      return result
+      
+    }else{
+      // Build the columns and placeholders for the insert query
+      const columns = Object.keys(data).join(", ")
+      const placeholders = Object.keys(data).map(() => "?").join(", ")
+      const values = Object.values(data)
+  
+      // Construct the query string for inserting data into the table
+      const query = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`
+  
+      // Execute the query and return the result
+      const [result] = await this.db.query(query, values)
+      return result
+    }
   }
 
 
