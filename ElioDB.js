@@ -85,8 +85,15 @@ export default class ElioDB {
     
     // WHERE clause
     for (const [key, value] of Object.entries(conditions)) {
-      queryParams.push(`${key} = ?`)
-      queryValues.push(value)
+      if (Array.isArray(value)) {
+        // Handle array condition (e.g., sku: [101, 202])
+        queryParams.push(`${key} IN (?)`)
+        queryValues.push(value)
+      } else {
+        // Handle normal condition
+        queryParams.push(`${key} = ?`)
+        queryValues.push(value)
+      }
     }
 
     if (queryParams.length > 0) {

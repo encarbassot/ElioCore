@@ -11,12 +11,13 @@ function unzipJWT(token,secret){
 
 export default function jwtVerify(tokenChecker, config){
 
+  
   return async (req, res, next) => {
-
+    
     
     try {
       let token =
-      req.body.token || req.query.token || req.headers["authorization"] || req.headers["Authorization"];
+      req.body.token || req.query.token || req.headers["authorization"] || req.headers["Authorization"]  || req.headers["authentication"] || req.headers["Authentication"];
       
       if (!token) {
         return res.status(403).json({
@@ -32,9 +33,8 @@ export default function jwtVerify(tokenChecker, config){
       if(tokenChecker){
 
         const jwt = unzipJWT(token, config.JWT_SECRET)
-        console.log("UNZIP",jwt)
 
-        const user = tokenChecker(jwt,token)
+        const user = await tokenChecker(jwt,token)
         if(!user){
           return res.status(401).json({ success: false, msg: "Invalid Token" });
         }

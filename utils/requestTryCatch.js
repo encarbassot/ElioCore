@@ -23,6 +23,7 @@ import fs from "fs"
   return async (req, res) => {
     try {
       const data = await handler(req, res);
+      
       // Check if the response has been sent
       if (!res.headersSent) {
         if(data){

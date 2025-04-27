@@ -7,18 +7,27 @@ export default class UserModel{
   #salt
   #email
   #jwt
-  
+  #activated
+  #created_at
+  #updated_at
+
   constructor({
     id,
     email,
     password,
     salt,
-    jwt
+    jwt,
+    activated,
+    created_at,
+    updated_at,
   }){
-    // this.id = id
+    this.id = id
     this.email = email
     this.#password = password
     this.#salt = salt
+    this.#activated = activated
+    this.#created_at = created_at
+    this.#updated_at = updated_at
   }
 
 
@@ -28,7 +37,7 @@ export default class UserModel{
 
   signJWT(config){
     if(!config){
-      console.log("MISSING JWT CONFIG IN signJWT()")
+      console.log("MISSING JWT CONFIG IN signJWT()",config)
     }
     this.#jwt = jwtSign({id:this.id},config)
     return this.#jwt
