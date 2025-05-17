@@ -28,6 +28,17 @@ import { createAsciiTable } from "./utils/beautyConsole.js"
 // console.log(user)
 
 
+// TODO
+// db.join("bikes", "bike_codes", "bikes.id", "bike_codes.bike_id", {
+//   select: ["bikes.*", "bike_codes.value", "bike_codes_types.label as code_label"],
+//   join: {
+//     table: "bike_codes_types",
+//     on: ["bike_codes.type_id", "bike_codes_types.id"]
+//   },
+//   where: { "bikes.id": bikeIds }
+// })
+
+
 
 export default class ElioDB {
   constructor({ host, user, password, database, port }) {
